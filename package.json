@@ -1,0 +1,27 @@
+{
+  "name": "generator-babel7-with-mocha",
+  "description": "A Yeoman generator for ECMAScript development environment with babel 7 and mocha.",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src/index.js --out-file app/index.js",
+    "pretest": "npm run build",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "yeoman-assert": "^3.1.1",
+    "yeoman-generator": "^4.0.1",
+    "yeoman-helpers": "^1.0.17"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "babel-eslint": "^10.0.1",
+    "core-js": "^3.1.3",
+    "eslint": "^5.16.0",
+    "mocha": "^6.1.4",
+    "regenerator-runtime": "^0.13.2"
+  }
+}
