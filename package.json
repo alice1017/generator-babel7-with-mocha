@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "babel src/index.js --out-file app/index.js",
+    "prepare": "npm run build",
     "pretest": "npm run build",
     "test": "mocha"
   },
