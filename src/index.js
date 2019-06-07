@@ -1,6 +1,6 @@
 import path from "path";
 import Generator from "yeoman-generator";
-import { file } from "assert";
+import { createLicense } from "lice-js/lice";
 
 export default class DevEnvGenerator extends Generator {
 
@@ -16,7 +16,14 @@ export default class DevEnvGenerator extends Generator {
         return values;
     }
 
+    getLicenses() {
+        const filePath = path.join(this.templatePath(), "../templates.json");
+        const licenseTemplate = require(filePath);
+        return Object.keys(licenseTemplate).map(keys => keys.toUpperCase());
+    }
+
     async prompting() {
+        const licenses = this.getLicenses();
         const { author, repo, license } = this.getDefaultValues();
         const prompts = [{
             type: "input",
@@ -33,11 +40,11 @@ export default class DevEnvGenerator extends Generator {
             name: "desc",
             message: "What is a short description of your project?"
         }, {
-            // todo 1-1: select license cateogries and make LISENCE file
-            type: "input",
+            // // todo 1-1: select license cateogries and make LISENCE file
+            type: "list",
             name: "license",
+            choices: licenses,
             message: "What is the open source license of this project?",
-            default: license
         }];
         this.answers = await this.prompt(prompts);
     }
