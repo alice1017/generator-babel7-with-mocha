@@ -1,5 +1,6 @@
 import path from "path";
 import Generator from "yeoman-generator";
+import { file } from "assert";
 
 export default class DevEnvGenerator extends Generator {
 
@@ -32,7 +33,7 @@ export default class DevEnvGenerator extends Generator {
             name: "desc",
             message: "What is a short description of your project?"
         }, {
-            // todo: select license cateogries and make LISENCE file
+            // todo 1-1: select license cateogries and make LISENCE file
             type: "input",
             name: "license",
             message: "What is the open source license of this project?",
@@ -42,7 +43,18 @@ export default class DevEnvGenerator extends Generator {
     }
 
     writing() {
-
+        // todo 1-2: generate license files from `this.answers.license`
+        const Copyfiles = [
+            ".gitignore", ".eslintrc.js", ".eslintignore", ".babelrc",
+            "package.json", "src/index.js", "test/mocha.opts"
+        ];
+        Copyfiles.forEach(file => {
+            this.fs.copyTpl(
+                this.templatePath(file),
+                this.destinationPath(file),
+                this.answers
+            );
+        });
     }
 
     install() {
