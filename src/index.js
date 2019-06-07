@@ -11,11 +11,12 @@ export default class DevEnvGenerator extends Generator {
         const values = {};
         values["author"] = this.user.git.name();
         values["repo"] = path.basename(this.destinationRoot());
+        values["license"] = "MIT";
         return values;
     }
 
     async prompting() {
-        const { author, repo } = this.getDefaultValues();
+        const { author, repo, license } = this.getDefaultValues();
         const prompts = [{
             type: "input",
             name: "author",
@@ -30,6 +31,12 @@ export default class DevEnvGenerator extends Generator {
             type: "input",
             name: "desc",
             message: "What is a short description of your project?"
+        }, {
+            // todo: select license cateogries and make LISENCE file
+            type: "input",
+            name: "license",
+            message: "What is the open source license of this project?",
+            default: license
         }];
         this.answers = await this.prompt(prompts);
     }
