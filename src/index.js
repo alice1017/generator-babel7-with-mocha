@@ -1,6 +1,8 @@
+import { render } from "ejs";
 import path from "path";
 import Generator from "yeoman-generator";
-import { createLicense } from "lice-js/lice";
+
+// TODO: Separate utility functions to another file
 
 export default class DevEnvGenerator extends Generator {
 
@@ -16,13 +18,20 @@ export default class DevEnvGenerator extends Generator {
         return values;
     }
 
-    getLicenses() {
+    getLicenseTemplates() {
+        console.count("getLicenseTemplate");
         const filePath = path.join(this.templatePath(), "../templates.json");
-        const licenseTemplate = require(filePath);
-        return Object.keys(licenseTemplate).map(keys => keys.toUpperCase());
+        return require(filePath);
+    }
+
+    getLicenses() {
+        console.count("getLicense");
+        const licenseTemplates = this.getLicenseTemplates();
+        return Object.keys(licenseTemplates).map(keys => keys.toUpperCase());
     }
 
     async prompting() {
+        console.count("prompting");
         const licenses = this.getLicenses();
         const { author, repo, license } = this.getDefaultValues();
         const prompts = [{
@@ -49,8 +58,9 @@ export default class DevEnvGenerator extends Generator {
         this.answers = await this.prompt(prompts);
     }
 
-    writing() {
-        // todo 1-2: generate license files from `this.answers.license`
+    async writing() {
+        console.count("writing");
+        // // todo 1-2: generate license files from `this.answers.license`
         const Copyfiles = [
             ".gitignore", ".eslintrc.js", ".eslintignore", ".babelrc",
             "package.json", "src/index.js", "test/mocha.opts"
@@ -62,6 +72,37 @@ export default class DevEnvGenerator extends Generator {
                 this.answers
             );
         });
+
+        await this.createLicenseFile();
+    }
+
+    async createLicenseFile() {
+        console.count("createLicenseFile");
+        const { author, repo, license } = this.answers;
+        const licenseData = this.getLicenseTemplates()[license.toLowerCase()];
+        const options = {
+            year: new Date().getFullYear(),
+            organization: author,
+            project: repo
+        };
+        await this.renderLicense(licenseData, options);
+    }
+
+    async _renderLicense(data, options){
+        console.count("_renderLicense");
+        if (data === undefined) {
+            return;
+        }
+        const body = render(data.body, options);
+        const header = (data.header) ? (render(data.header, options) + "\n"): "";
+        const filePath = this.destinationPath("LICENSE");
+        try {
+            await this.fs.write(filePath, `${header}${body}`);
+            this.log.create("LICENSE");
+        }
+        catch(err) {
+            throw err;
+        }
     }
 
     install() {
