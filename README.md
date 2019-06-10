@@ -1,6 +1,9 @@
 # generator-babel7-with-mocha
 
 [![Build Status](https://img.shields.io/travis/alice1017/generator-babel7-with-mocha.svg)](https://travis-ci.org/alice1017/generator-babel7-with-mocha)
+[![Version of package.json](https://img.shields.io/github/package-json/v/alice1017/generator-babel7-with-mocha.svg?color=success)](https://github.com/alice1017/generator-babel7-with-mocha/blob/master/package.json)
+[![Package version](https://img.shields.io/npm/v/generator-babel7-with-mocha.svg)](https://www.npmjs.com/package/generator-babel7-with-mocha)
+![Node version](https://img.shields.io/node/v/generator-babel7-with-mocha.svg?color=blue)
 
 A [Yeoman](https://yeoman.io/) generator for **ECMAScript development environment** with the latest **babel@7** and **mocha**.
 
