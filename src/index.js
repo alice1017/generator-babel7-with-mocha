@@ -2,54 +2,48 @@ import { render } from "ejs";
 import path from "path";
 import Generator from "yeoman-generator";
 
-// TODO: Separate utility functions to another file
+const getLicenseTemplates = (templatePath) => {
+    const filePath = path.join(templatePath, "../templates.json");
+    return require(filePath);
+};
+
+const getLicenseNames = (licenseTemplates) => {
+    const names = Object.keys(licenseTemplates).map(keys => keys.toUpperCase());
+    return names.sort();
+};
+
+const renderLicense = async (data, options) => {
+    const body = render(data.body, options);
+    const header = (data.header) ? (render(data.header, options) + "\n\n"): "";
+    return `${header}${body}`;
+};
+
 
 export default class DevEnvGenerator extends Generator {
 
     constructor(args, options) {
         super(args, options);
-    }
-
-    getDefaultValues() {
-        const values = {};
-        values["author"] = this.user.git.name();
-        values["repo"] = path.basename(this.destinationRoot());
-        values["license"] = "MIT";
-        return values;
-    }
-
-    getLicenseTemplates() {
-        console.count("getLicenseTemplate");
-        const filePath = path.join(this.templatePath(), "../templates.json");
-        return require(filePath);
-    }
-
-    getLicenses() {
-        console.count("getLicense");
-        const licenseTemplates = this.getLicenseTemplates();
-        return Object.keys(licenseTemplates).map(keys => keys.toUpperCase());
+        this.licenseTemplates = getLicenseTemplates(this.templatePath());
     }
 
     async prompting() {
-        console.count("prompting");
-        const licenses = this.getLicenses();
-        const { author, repo, license } = this.getDefaultValues();
+        const licenses = getLicenseNames(this.licenseTemplates);
+
         const prompts = [{
             type: "input",
             name: "author",
             message: "What is the author name of this project?",
-            default: author
+            default: this.user.git.name()
         }, {
             type: "input",
             name: "repo",
             message: "What is the reository or project name?",
-            default: repo
+            default: path.basename(this.destinationRoot())
         }, {
             type: "input",
             name: "desc",
             message: "What is a short description of your project?"
         }, {
-            // // todo 1-1: select license cateogries and make LISENCE file
             type: "list",
             name: "license",
             choices: licenses,
@@ -59,8 +53,7 @@ export default class DevEnvGenerator extends Generator {
     }
 
     async writing() {
-        console.count("writing");
-        // // todo 1-2: generate license files from `this.answers.license`
+        // => 1. copy template file
         const Copyfiles = [
             ".gitignore", ".eslintrc.js", ".eslintignore", ".babelrc",
             "package.json", "src/index.js", "test/mocha.opts"
@@ -73,32 +66,18 @@ export default class DevEnvGenerator extends Generator {
             );
         });
 
-        await this.createLicenseFile();
-    }
-
-    async createLicenseFile() {
-        console.count("createLicenseFile");
+        // => 2. create LICENSE file
+        const filePath = this.destinationPath("LICENSE");
         const { author, repo, license } = this.answers;
-        const licenseData = this.getLicenseTemplates()[license.toLowerCase()];
+        const licenseData = this.licenseTemplates[license.toLowerCase()];
         const options = {
             year: new Date().getFullYear(),
             organization: author,
             project: repo
         };
-        await this.renderLicense(licenseData, options);
-    }
-
-    async _renderLicense(data, options){
-        console.count("_renderLicense");
-        if (data === undefined) {
-            return;
-        }
-        const body = render(data.body, options);
-        const header = (data.header) ? (render(data.header, options) + "\n"): "";
-        const filePath = this.destinationPath("LICENSE");
+        const licenseBody = await renderLicense(licenseData, options);
         try {
-            await this.fs.write(filePath, `${header}${body}`);
-            this.log.create("LICENSE");
+            await this.fs.write(filePath, licenseBody);
         }
         catch(err) {
             throw err;
