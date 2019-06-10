@@ -2,19 +2,19 @@ import { render } from "ejs";
 import path from "path";
 import Generator from "yeoman-generator";
 
-const getLicenseTemplates = (templatePath) => {
+export const getLicenseTemplates = (templatePath) => {
     const filePath = path.join(templatePath, "../templates.json");
     return require(filePath);
 };
 
-const getLicenseNames = (licenseTemplates) => {
+export const getLicenseNames = (licenseTemplates) => {
     const names = Object.keys(licenseTemplates).map(keys => keys.toUpperCase());
     return names.sort();
 };
 
-const renderLicense = async (data, options) => {
-    const body = render(data.body, options);
-    const header = (data.header) ? (render(data.header, options) + "\n\n"): "";
+export const renderLicense = (template, options) => {
+    const body = render(template.body, options);
+    const header = (template.header) ? (render(template.header, options) + "\n\n"): "";
     return `${header}${body}`;
 };
 
