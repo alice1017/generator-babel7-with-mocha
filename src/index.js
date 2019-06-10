@@ -3,7 +3,7 @@ import path from "path";
 import Generator from "yeoman-generator";
 
 export const getLicenseTemplates = (templatePath) => {
-    const filePath = path.join(templatePath, "../templates.json");
+    const filePath = path.join(templatePath, "../licenses.json");
     return require(filePath);
 };
 

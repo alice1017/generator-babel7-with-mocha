@@ -8,7 +8,7 @@ import {
 
 describe("Test utilities", () => {
 
-    const templatePath = path.join(__dirname, "../app/templates.json");
+    const templatePath = path.join(__dirname, "../app/licenses.json");
 
     it("Whether get correct license template", () => {
         const actual = getLicenseTemplates(templatePath);
