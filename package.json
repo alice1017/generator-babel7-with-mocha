@@ -1,7 +1,7 @@
 {
   "name": "generator-babel7-with-mocha",
   "description": "A Yeoman generator for ECMAScript development environment with babel 7 and mocha.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": {
     "name": "Alice1017",
     "url": "https://github.com/alice1017"
